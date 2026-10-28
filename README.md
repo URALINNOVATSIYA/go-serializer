@@ -1,7 +1,7 @@
-# codec
+# Serializer
 
-`codec` is a Go serializer that converts values to a binary representation and
-restores them at runtime. It supports primitive values and composite Go values,
+`go-serializer` is a Go serializer that converts values to a binary representation and
+restores them at runtime preserving their internal states. It supports primitive values and composite Go values,
 including pointers, interfaces, arrays, slices, maps, structs, channels, functions and shared references between values.
 
 ## Contents
@@ -17,7 +17,7 @@ including pointers, interfaces, arrays, slices, maps, structs, channels, functio
 ## Installation
 
 ```bash
-go get github.com/URALINNOVATSIYA/codec
+go get github.com/URALINNOVATSIYA/go-serializer
 ```
 
 ## Quick start
@@ -30,7 +30,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/URALINNOVATSIYA/codec"
+	"github.com/URALINNOVATSIYA/go-serializer"
 )
 
 func main() {
@@ -40,8 +40,8 @@ func main() {
 		"scores": []int{10, 20, 30},
 	}
 
-	data := codec.Serialize(original)
-	value, err := codec.Unserialize(data)
+	data := serializer.Serialize(original)
+	value, err := serializer.Unserialize(data)
 	if err != nil {
 		panic(err)
 	}
@@ -54,11 +54,11 @@ When a serializer is reused, or when a custom type registry is needed, use the
 stateful types directly:
 
 ```go
-serializer := codec.NewSerializer()
-data := serializer.Encode(value)
+s := serializer.NewSerializer()
+data := s.Encode(value)
 
-unserializer := codec.NewUnserializer()
-decoded, err := unserializer.Decode(data)
+u := serializer.NewUnserializer()
+decoded, err := u.Decode(data)
 if err != nil {
 	panic(err)
 }
@@ -72,12 +72,12 @@ type MyMessage struct {
 	Text string
 }
 
-registry := codec.NewTypeRegistry(false)
+registry := serializer.NewTypeRegistry(false)
 registry.RegisterBaseTypes()
 registry.RegisterTypeOf(MyMessage{})
 
-data := codec.Serialize(MyMessage{Text: "hello"}, codec.WithTypeRegistry(registry))
-value, err := codec.Unserialize(data, codec.WithTypeRegistry(registry))
+data := serializer.Serialize(MyMessage{Text: "hello"}, serializer.WithTypeRegistry(registry))
+value, err := serializer.Unserialize(data, serializer.WithTypeRegistry(registry))
 ```
 
 ## Options
@@ -89,8 +89,8 @@ type names and registered function names, and uses each hash's position as the
 identifier:
 
 ```go
-data := codec.Serialize(value, codec.WithTypeAutoOrdering())
-decoded, err := codec.Unserialize(data, codec.WithTypeRegistry(registry))
+data := serializer.Serialize(value, serializer.WithTypeAutoOrdering())
+decoded, err := serializer.Unserialize(data, serializer.WithTypeRegistry(registry))
 if err != nil {
 	panic(err)
 }
@@ -105,10 +105,10 @@ channels. A positive limit is enforced; zero or a negative limit disables that
 limit:
 
 ```go
-decoded, err := codec.Unserialize(
+decoded, err := serializer.Unserialize(
 	data,
-	codec.WithMaxSliceCapacity(1_000_000),
-	codec.WithMaxChanCapacity(10_000),
+	serializer.WithMaxSliceCapacity(1_000_000),
+	serializer.WithMaxChanCapacity(10_000),
 )
 ```
 
@@ -133,7 +133,7 @@ package main
 import (
 	"reflect"
 
-	"github.com/URALINNOVATSIYA/codec"
+	"github.com/URALINNOVATSIYA/go-serializer"
 )
 
 type User struct {
@@ -143,23 +143,23 @@ type User struct {
 
 func registerTypes() {
 	// Register a type by providing a zero value.
-	codec.RegisterTypeOf(User{})
-	codec.RegisterTypeOf(map[string][]bool{})
+	serializer.RegisterTypeOf(User{})
+	serializer.RegisterTypeOf(map[string][]bool{})
 
 	// Or register a reflect.Type directly.
-	codec.RegisterType(reflect.TypeOf([]User{}))
+	serializer.RegisterType(reflect.TypeOf([]User{}))
 }
 ```
 
 For strict control, create a registry with automatic registration disabled:
 
 ```go
-registry := codec.NewTypeRegistry(false)
+registry := serializer.NewTypeRegistry(false)
 registry.RegisterBaseTypes()
 registry.RegisterTypeOf(User{})
 
-serializer := codec.NewSerializer().WithTypeRegistry(registry)
-unserializer := codec.NewUnserializer().WithTypeRegistry(registry)
+serializer := serializer.NewSerializer().WithTypeRegistry(registry)
+unserializer := serializer.NewUnserializer().WithTypeRegistry(registry)
 ```
 
 `RegisterTypeOf` is the preferred way to register a function: it registers

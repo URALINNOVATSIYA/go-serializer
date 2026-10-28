@@ -1,6 +1,6 @@
 # Serialization and Deserialization Algorithm
 
-This document describes how the `codec` package traverses a Go value graph,
+This document describes how the `go-serializer` package traverses a Go value graph,
 writes it to the binary format, and reconstructs it when decoding. The byte
 layout is specified in [FORMAT.md](./FORMAT.md).
 

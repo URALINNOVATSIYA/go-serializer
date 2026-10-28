@@ -27,7 +27,7 @@ func benchmarkGraphValue() any {
 	}
 }
 
-func BenchmarkCodec(b *testing.B) {
+func BenchmarSerializer(b *testing.B) {
 	payload := make([]byte, 64<<10)
 	for i := range payload {
 		payload[i] = byte(i)

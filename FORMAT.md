@@ -1,6 +1,6 @@
 ## Serialized Data Format
 
-This document describes the binary format emitted by the `codec` package.
+This document describes the binary format emitted by the `go-serializer` package.
 The current implementation is version 1; the first byte of every payload is a
 header byte whose low 4 bits contain the format version and whose high bits flag
 which metadata sections are present before the node stream.
@@ -201,7 +201,7 @@ pointer identities.
 
 ### Floating-point and complex values
 
-`float32` is encoded as its IEEE-754 bit pattern, byte-swapped so the codec can
+`float32` is encoded as its IEEE-754 bit pattern, byte-swapped so the unserializer can
 rebuild the value deterministically, and then written as a compact `u3` value.
 `float64` is encoded the same way with `u4`.
 
