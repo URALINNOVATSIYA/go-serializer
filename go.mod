@@ -1,4 +1,3 @@
-// Deprecated: use github.com/URALINNOVATSIYA/go-serializer instead.
 module github.com/URALINNOVATSIYA/go-serializer
 
 go 1.26.4
