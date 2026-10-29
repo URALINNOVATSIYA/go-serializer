@@ -1,3 +1,5 @@
+// Package serializer provides lossless serialization and deserialization of arbitrary Go values, 
+// preserving their original structure.
 package serializer
 
 import (
